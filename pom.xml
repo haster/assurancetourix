@@ -15,8 +15,4 @@
 	
 	<name>Assurancetourix</name>
 	
-	<modules>
-		<module>common</module>
-	</modules>
-
 </project>
