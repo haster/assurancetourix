@@ -1,26 +1,36 @@
 package nl.crashdata.assurancetourix.rest.insurance;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.Assert.*;
 
-import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import nl.crashdata.assurancetourix.rest.entities.Insurance;
 import nl.crashdata.assurancetourix.rest.resources.InsuranceResource;
+import org.arquillian.container.chameleon.api.ChameleonTarget;
+import org.arquillian.container.chameleon.deployment.api.DeploymentParameters;
+import org.arquillian.container.chameleon.deployment.maven.MavenBuild;
+import org.arquillian.container.chameleon.runner.ArquillianChameleon;
+import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.api.TestInstance.Lifecycle;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
-@TestInstance(Lifecycle.PER_CLASS)
+// https://www.javacodegeeks.com/2018/03/arquillian-chameleon-simplifying-your-arquillian-tests.html
+@RunWith(ArquillianChameleon.class)
+@ChameleonTarget("wildfly:11.0.0.Final:managed")
+@MavenBuild(pom = "../pom.xml", module = "rest")
+@DeploymentParameters(testable = false)
 public class InsuranceResourceTest
 {
-	private static final URI DEPLOYMENT_URI = URI.create("http://127.0.0.1:8080");
-
 	private ResteasyClient resteasyClient = new ResteasyClientBuilder().build();
+
+	@ArquillianResource
+	URL url;
 
 	@Test
 	public void createInsurance()
@@ -36,9 +46,22 @@ public class InsuranceResourceTest
 
 	private Response post(Insurance insurance)
 	{
-		return resteasyClient.target(DEPLOYMENT_URI)
-			.path("service")
-			.proxy(InsuranceResource.class)
-			.create(insurance);
+		try
+		{
+			return resteasyClient.target(url.toURI())
+				.path("service")
+				.proxy(InsuranceResource.class)
+				.create(insurance);
+		}
+		catch (NullPointerException e)
+		{
+			// TODO Doe hier iets nuttigs met de exception (log.error bijv), of gooi hem door.
+			throw new RuntimeException(e);
+		}
+		catch (URISyntaxException e)
+		{
+			// TODO Doe hier iets nuttigs met de exception (log.error bijv), of gooi hem door.
+			throw new RuntimeException(e);
+		}
 	}
 }
