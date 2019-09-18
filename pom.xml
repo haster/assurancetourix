@@ -18,6 +18,8 @@
 
 	<modules>
 		<module>rest</module>
+		<module>entities</module>
+		<module>dao</module>
 	</modules>
 
 	<properties>
@@ -38,6 +40,17 @@
 				<groupId>commons-codec</groupId>
 				<artifactId>commons-codec</artifactId>
 				<version>1.11</version>
+			</dependency>
+			<dependency>
+				<groupId>nl.crashdata.assurancetourix</groupId>
+				<artifactId>assurancetourix-dao</artifactId>
+				<version>${project.version}</version>
+				<type>ejb</type>
+			</dependency>
+			<dependency>
+				<groupId>nl.crashdata.assurancetourix</groupId>
+				<artifactId>assurancetourix-entities</artifactId>
+				<version>${project.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.logging.log4j</groupId>

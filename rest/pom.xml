@@ -15,23 +15,49 @@
 
 	<dependencies>
 		<dependency>
+			<groupId>javax.enterprise</groupId>
+			<artifactId>cdi-api</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.jboss.spec.javax.ejb</groupId>
+			<artifactId>jboss-ejb-api_3.2_spec</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.jboss.spec.javax.servlet</groupId>
+			<artifactId>jboss-servlet-api_4.0_spec</artifactId>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
 			<groupId>org.jboss.spec.javax.ws.rs</groupId>
 			<artifactId>jboss-jaxrs-api_2.1_spec</artifactId>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.jboss.spec.javax.xml.bind</groupId>
 			<artifactId>jboss-jaxb-api_2.3_spec</artifactId>
+			<scope>provided</scope>
 		</dependency>
+
+		<dependency>
+			<groupId>nl.crashdata.assurancetourix</groupId>
+			<artifactId>assurancetourix-dao</artifactId>
+			<type>ejb</type>
+		</dependency>
+
+
 
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-<!-- 			<version>4.12</version> -->
 			<scope>test</scope>
 		</dependency>
 
@@ -88,7 +114,7 @@
 		<!-- <artifactId>junit-vintage-engine</artifactId> -->
 		<!-- <scope>test</scope> -->
 		<!-- </dependency> -->
-		
+
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>jcl-over-slf4j</artifactId>
