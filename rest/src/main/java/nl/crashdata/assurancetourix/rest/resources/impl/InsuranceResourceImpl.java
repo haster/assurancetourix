@@ -1,26 +1,46 @@
 package nl.crashdata.assurancetourix.rest.resources.impl;
 
-import javax.ws.rs.core.Response;
+import java.net.URI;
 
+import javax.ejb.Stateless;
+import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpUtils;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriBuilder;
+
+import nl.crashdata.assurancetourix.data.entities.PInsurance;
 import nl.crashdata.assurancetourix.rest.entities.Insurance;
 import nl.crashdata.assurancetourix.rest.resources.InsuranceResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Stateless
 public class InsuranceResourceImpl implements InsuranceResource
 {
 	private static final Logger log = LoggerFactory.getLogger(InsuranceResourceImpl.class);
 
-	public InsuranceResourceImpl()
-	{
-		log.info("resource created");
-	}
+	@Inject
+	private InsuranceDAO insuranceDAO;
+
+	@Context
+	private HttpServletRequest currentRequest;
 
 	@Override
 	public Response create(Insurance insurance)
 	{
-		log.info("create called");
-		return null;
+		PInsurance pInsurance = new PInsurance();
+		pInsurance.setName(insurance.getName());
+		pInsurance.setPolicyNumber(insurance.getPolicyNumber());
+
+		insuranceDAO.save(pInsurance);
+
+		URI location = UriBuilder.fromUri(HttpUtils.getRequestURL(currentRequest).toString())
+			.path("/{id}")
+			.build(pInsurance.getId());
+
+		return Response.created(location).entity(insurance).build();
 	}
 
 	@Override
