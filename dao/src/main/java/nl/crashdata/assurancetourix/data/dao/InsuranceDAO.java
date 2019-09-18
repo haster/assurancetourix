@@ -1,4 +1,4 @@
-package nl.crashdata.assurancetourix.rest.resources.impl;
+package nl.crashdata.assurancetourix.data.dao;
 
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;

@@ -10,6 +10,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 
+import nl.crashdata.assurancetourix.data.dao.InsuranceDAO;
 import nl.crashdata.assurancetourix.data.entities.PInsurance;
 import nl.crashdata.assurancetourix.rest.entities.Insurance;
 import nl.crashdata.assurancetourix.rest.resources.InsuranceResource;
