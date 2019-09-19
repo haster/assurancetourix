@@ -1,0 +1,26 @@
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd
+        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+        
+        <changeSet id="add-hibernate-sequence" author="haster">
+        	<createSequence sequenceName="hibernate_sequence" startValue="1000" />
+        </changeSet>
+        
+        <changeSet id="add-insurance-table" author="haster">
+        	<createTable tableName="INSURANCE">
+        		<column name="ID" type="bigint">
+        			<constraints primaryKey="true" primaryKeyName="PK_INSURANCE" nullable="false"/>
+        		</column>
+        		<column name="VERSION" type="bigint"/>
+        		<column name="NAME" type="varchar(255)">
+        			<constraints nullable="false"/>
+        		</column>
+        		<column name="POLICYNUMBER" type="numeric(11)">
+        			<constraints nullable="false"/>
+        		</column>
+        	</createTable>
+        </changeSet>
+</databaseChangeLog>

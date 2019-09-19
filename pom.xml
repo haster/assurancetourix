@@ -27,6 +27,7 @@
 		<version.resteasy>3.8.1.Final</version.resteasy>
 		<version.log4j>2.12.1</version.log4j>
 		<version.arquillian.chameleon>1.0.0.CR6</version.arquillian.chameleon>
+		<version.liquibase>3.8.0</version.liquibase>
 	</properties>
 
 	<dependencyManagement>
@@ -40,6 +41,11 @@
 				<groupId>commons-codec</groupId>
 				<artifactId>commons-codec</artifactId>
 				<version>1.11</version>
+			</dependency>
+			<dependency>
+				<groupId>javax.annotation</groupId>
+				<artifactId>javax.annotation-api</artifactId>
+				<version>1.3.2</version>
 			</dependency>
 			<dependency>
 				<groupId>nl.crashdata.assurancetourix</groupId>
@@ -101,6 +107,22 @@
 				<groupId>org.jboss.resteasy</groupId>
 				<artifactId>resteasy-jackson-provider</artifactId>
 				<version>${version.resteasy}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.liquibase</groupId>
+				<artifactId>liquibase-cdi</artifactId>
+				<version>${version.liquibase}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.liquibase</groupId>
+				<artifactId>liquibase-core</artifactId>
+				<version>${version.liquibase}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>ch.qos.logback</groupId>
+						<artifactId>logback-classic</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
