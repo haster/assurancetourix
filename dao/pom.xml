@@ -33,7 +33,5 @@
 			<groupId>nl.crashdata.assurancetourix</groupId>
 			<artifactId>assurancetourix-entities</artifactId>
 		</dependency>
-
-
 	</dependencies>
 </project>
