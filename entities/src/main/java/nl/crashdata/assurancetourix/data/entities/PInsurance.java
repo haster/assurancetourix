@@ -14,7 +14,7 @@ public class PInsurance
 	private Long id;
 
 	@Version
-	@Column(name = "version", nullable = false)
+	@Column(name = "version", nullable = true)
 	private Long version;
 
 	@Basic(optional = false)
