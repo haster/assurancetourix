@@ -4,6 +4,7 @@ import javax.persistence.*;
 
 @Entity
 @Access(AccessType.PROPERTY)
+@Table(name = "insurance")
 public class PInsurance
 {
 	@Id
