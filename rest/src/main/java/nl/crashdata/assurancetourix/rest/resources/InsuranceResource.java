@@ -18,6 +18,9 @@ public interface InsuranceResource
 	@GET
 	public Response getAll();
 
+	@GET
+	public Response get(long id);
+
 	@POST
 	public Response create(Insurance insurance);
 }

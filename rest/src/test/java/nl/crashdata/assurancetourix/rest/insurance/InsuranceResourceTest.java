@@ -2,8 +2,11 @@ package nl.crashdata.assurancetourix.rest.insurance;
 
 import static org.junit.Assert.*;
 
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -20,9 +23,8 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-// https://www.javacodegeeks.com/2018/03/arquillian-chameleon-simplifying-your-arquillian-tests.html
 @RunWith(ArquillianChameleon.class)
-@ChameleonTarget("wildfly:11.0.0.Final:managed")
+@ChameleonTarget("wildfly:15.0.1.Final:managed")
 @MavenBuild(pom = "../pom.xml", module = "rest")
 @DeploymentParameters(testable = false)
 public class InsuranceResourceTest
@@ -30,7 +32,7 @@ public class InsuranceResourceTest
 	private ResteasyClient resteasyClient = new ResteasyClientBuilder().build();
 
 	@ArquillianResource
-	URL url;
+	private URL url;
 
 	@Test
 	public void createInsurance()
@@ -39,9 +41,16 @@ public class InsuranceResourceTest
 		insurance.setName("Test insurance");
 		insurance.setPolicyNumber(123456789L);
 
-		Response response = post(insurance);
+		Response createdResponse = post(insurance);
+		assertEquals(Status.CREATED, createdResponse.getStatusInfo());
 
-		assertEquals(Status.CREATED, response.getStatusInfo());
+		URI location = createdResponse.getLocation();
+		Response getResponse = get(parseId(location));
+		assertEquals(Status.OK, getResponse.getStatusInfo());
+
+		Insurance returnedInsurance = (Insurance) getResponse.getEntity();
+		assertNotNull(returnedInsurance);
+		assertEquals(123456789L, returnedInsurance.getPolicyNumber());
 	}
 
 	private Response post(Insurance insurance)
@@ -53,15 +62,46 @@ public class InsuranceResourceTest
 				.proxy(InsuranceResource.class)
 				.create(insurance);
 		}
-		catch (NullPointerException e)
+		catch (NullPointerException | URISyntaxException e)
 		{
-			// TODO Doe hier iets nuttigs met de exception (log.error bijv), of gooi hem door.
 			throw new RuntimeException(e);
 		}
-		catch (URISyntaxException e)
+	}
+
+	private Response getAll()
+	{
+		try
 		{
-			// TODO Doe hier iets nuttigs met de exception (log.error bijv), of gooi hem door.
+			return resteasyClient.target(url.toURI())
+				.path("service")
+				.proxy(InsuranceResource.class)
+				.getAll();
+		}
+		catch (NullPointerException | URISyntaxException e)
+		{
 			throw new RuntimeException(e);
 		}
+	}
+
+	private Response get(long id)
+	{
+		try
+		{
+			return resteasyClient.target(url.toURI())
+				.path("service")
+				.proxy(InsuranceResource.class)
+				.get(id);
+		}
+		catch (NullPointerException | URISyntaxException e)
+		{
+			throw new RuntimeException(e);
+		}
+	}
+
+	private long parseId(URI location)
+	{
+		Pattern pattern = Pattern.compile("\\d{4,}");
+		Matcher matcher = pattern.matcher(location.getPath());
+		return Long.parseLong(matcher.group(matcher.groupCount()));
 	}
 }

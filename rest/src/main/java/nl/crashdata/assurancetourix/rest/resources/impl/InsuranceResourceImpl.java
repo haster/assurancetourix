@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpUtils;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriBuilder;
 
 import nl.crashdata.assurancetourix.data.dao.InsuranceDAO;
@@ -49,5 +50,19 @@ public class InsuranceResourceImpl implements InsuranceResource
 	{
 		log.info("getAll called");
 		return null;
+	}
+
+	@Override
+	public Response get(long id)
+	{
+		// if (insuranceDAO.exists(id))
+		// {
+		// PInsurance insurance = insuranceDAO.get(id);
+		// return Response.ok(insurance).build();
+		// }
+		// else
+		// {
+		return Response.status(Status.NOT_FOUND).build();
+		// }
 	}
 }
