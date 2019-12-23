@@ -20,6 +20,7 @@
 		<module>rest</module>
 		<module>entities</module>
 		<module>dao</module>
+		<module>ear</module>
 	</modules>
 
 	<properties>
@@ -43,11 +44,6 @@
 				<version>1.13</version>
 			</dependency>
 			<dependency>
-				<groupId>javax.annotation</groupId>
-				<artifactId>javax.annotation-api</artifactId>
-				<version>1.3.2</version>
-			</dependency>
-			<dependency>
 				<groupId>nl.crashdata.assurancetourix</groupId>
 				<artifactId>assurancetourix-dao</artifactId>
 				<version>${project.version}</version>
@@ -57,6 +53,12 @@
 				<groupId>nl.crashdata.assurancetourix</groupId>
 				<artifactId>assurancetourix-entities</artifactId>
 				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>nl.crashdata.assurancetourix</groupId>
+				<artifactId>assurancetourix-rest</artifactId>
+				<version>${project.version}</version>
+				<type>war</type>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.logging.log4j</groupId>
@@ -101,7 +103,7 @@
 			<dependency>
 				<groupId>org.hibernate</groupId>
 				<artifactId>hibernate-jpamodelgen</artifactId>
-				<version>5.4.10.Final</version>
+				<version>5.4.10.haster1</version>
 				<exclusions>
 					<exclusion>
 						<groupId>javax.xml.bind</groupId>
