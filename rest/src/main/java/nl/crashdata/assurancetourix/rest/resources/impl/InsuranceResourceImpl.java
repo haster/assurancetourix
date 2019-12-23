@@ -2,10 +2,11 @@ package nl.crashdata.assurancetourix.rest.resources.impl;
 
 import java.net.URI;
 
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpUtils;
+import javax.transaction.Transactional;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -19,11 +20,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Stateless
+@Transactional
 public class InsuranceResourceImpl implements InsuranceResource
 {
 	private static final Logger log = LoggerFactory.getLogger(InsuranceResourceImpl.class);
 
-	@Inject
+	@EJB
 	private InsuranceDAO insuranceDAO;
 
 	@Context
