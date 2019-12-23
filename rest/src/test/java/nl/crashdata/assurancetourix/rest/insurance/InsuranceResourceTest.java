@@ -24,8 +24,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 @RunWith(ArquillianChameleon.class)
-@ChameleonTarget("wildfly:15.0.1.Final:managed")
-@MavenBuild(pom = "../pom.xml", module = "rest")
+@ChameleonTarget("wildfly:16.0.0.Final:managed")
+@MavenBuild(pom = "../pom.xml", module = "ear")
 @DeploymentParameters(testable = false)
 public class InsuranceResourceTest
 {
