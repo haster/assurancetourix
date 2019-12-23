@@ -10,6 +10,7 @@ import javax.transaction.Transactional;
 import javax.transaction.Transactional.TxType;
 
 import nl.crashdata.assurancetourix.data.entities.PInsurance;
+import nl.crashdata.assurancetourix.data.entities.PInsurance_;
 
 @Stateless
 @Transactional(value = TxType.MANDATORY)
@@ -28,7 +29,8 @@ public class InsuranceDAO
 		CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
 		CriteriaQuery<Long> query = criteriaBuilder.createQuery(Long.class);
 		Root<PInsurance> root = query.from(PInsurance.class);
-		// query.select(PInsurance_.)
-		return false;
+		query.where(criteriaBuilder.equal(root.get(PInsurance_.id), id));
+		query.select(criteriaBuilder.count(root.get(PInsurance_.id)));
+		return em.createQuery(query).getSingleResult() > 0;
 	}
 }
