@@ -4,6 +4,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -19,7 +20,8 @@ public interface InsuranceResource
 	public Response getAll();
 
 	@GET
-	public Response get(long id);
+	@Path("{id}")
+	public Response get(@PathParam("id") long id);
 
 	@POST
 	public Response create(Insurance insurance);
