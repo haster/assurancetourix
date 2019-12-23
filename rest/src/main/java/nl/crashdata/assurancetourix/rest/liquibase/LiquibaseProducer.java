@@ -1,7 +1,5 @@
 package nl.crashdata.assurancetourix.rest.liquibase;
 
-import java.sql.SQLException;
-
 import javax.annotation.Resource;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
@@ -29,7 +27,7 @@ public class LiquibaseProducer
 
 	@Produces
 	@LiquibaseType
-	public DataSource createDataSource() throws SQLException
+	public DataSource createDataSource()
 	{
 		return myDataSource;
 	}
