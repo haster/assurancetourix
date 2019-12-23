@@ -21,6 +21,13 @@
 		</dependency>
 
 		<dependency>
+			<groupId>nl.crashdata.assurancetourix</groupId>
+			<artifactId>assurancetourix-dao</artifactId>
+			<type>ejb</type>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
 			<groupId>org.jboss.spec.javax.annotation</groupId>
 			<artifactId>jboss-annotations-api_1.3_spec</artifactId>
 			<scope>provided</scope>
@@ -36,6 +43,11 @@
 			<artifactId>jboss-servlet-api_4.0_spec</artifactId>
 			<scope>provided</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.jboss.spec.javax.transaction</groupId>
+			<artifactId>jboss-transaction-api_1.2_spec</artifactId>
+			<scope>provided</scope>
+		</dependency>
 
 		<dependency>
 			<groupId>org.jboss.spec.javax.ws.rs</groupId>
@@ -49,12 +61,6 @@
 		</dependency>
 
 		<dependency>
-			<groupId>nl.crashdata.assurancetourix</groupId>
-			<artifactId>assurancetourix-dao</artifactId>
-			<type>ejb</type>
-		</dependency>
-
-		<dependency>
 			<groupId>org.liquibase</groupId>
 			<artifactId>liquibase-cdi</artifactId>
 		</dependency>
@@ -62,6 +68,11 @@
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.yaml</groupId>
+			<artifactId>snakeyaml</artifactId>
 		</dependency>
 
 		<dependency>
@@ -119,7 +130,7 @@
 					<version>3.2.3</version>
 					<configuration>
 						<packagingExcludes>
-							WEB-INF/lib/assurancetourix-dao-*.jar
+							WEB-INF/lib/assurancetourix-dao-*.jar,
 							WEB-INF/lib/assurancetourix-entities-*.jar
 						</packagingExcludes>
 					</configuration>
