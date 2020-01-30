@@ -33,4 +33,9 @@ public class InsuranceDAO
 		query.select(criteriaBuilder.count(root.get(PInsurance_.id)));
 		return em.createQuery(query).getSingleResult() > 0;
 	}
+
+	public PInsurance get(long id)
+	{
+		return em.find(PInsurance.class, id);
+	}
 }

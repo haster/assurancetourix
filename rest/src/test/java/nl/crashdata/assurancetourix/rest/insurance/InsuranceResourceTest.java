@@ -48,7 +48,7 @@ public class InsuranceResourceTest
 		Response getResponse = get(parseId(location));
 		assertEquals(Status.OK, getResponse.getStatusInfo());
 
-		Insurance returnedInsurance = (Insurance) getResponse.getEntity();
+		Insurance returnedInsurance = getResponse.readEntity(Insurance.class);
 		assertNotNull(returnedInsurance);
 		assertEquals(123456789L, returnedInsurance.getPolicyNumber());
 	}
@@ -58,7 +58,6 @@ public class InsuranceResourceTest
 		try
 		{
 			return resteasyClient.target(url.toURI())
-				.path("service")
 				.proxy(InsuranceResource.class)
 				.create(insurance);
 		}
@@ -72,10 +71,7 @@ public class InsuranceResourceTest
 	{
 		try
 		{
-			return resteasyClient.target(url.toURI())
-				.path("service")
-				.proxy(InsuranceResource.class)
-				.getAll();
+			return resteasyClient.target(url.toURI()).proxy(InsuranceResource.class).getAll();
 		}
 		catch (NullPointerException | URISyntaxException e)
 		{
@@ -87,10 +83,7 @@ public class InsuranceResourceTest
 	{
 		try
 		{
-			return resteasyClient.target(url.toURI())
-				.path("service")
-				.proxy(InsuranceResource.class)
-				.get(id);
+			return resteasyClient.target(url.toURI()).proxy(InsuranceResource.class).get(id);
 		}
 		catch (NullPointerException | URISyntaxException e)
 		{
@@ -102,6 +95,7 @@ public class InsuranceResourceTest
 	{
 		Pattern pattern = Pattern.compile("\\d{4,}");
 		Matcher matcher = pattern.matcher(location.getPath());
+		matcher.find();
 		return Long.parseLong(matcher.group(matcher.groupCount()));
 	}
 }

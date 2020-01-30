@@ -57,14 +57,17 @@ public class InsuranceResourceImpl implements InsuranceResource
 	@Override
 	public Response get(long id)
 	{
-		// if (insuranceDAO.exists(id))
-		// {
-		// PInsurance insurance = insuranceDAO.get(id);
-		// return Response.ok(insurance).build();
-		// }
-		// else
-		// {
-		return Response.status(Status.NOT_FOUND).build();
-		// }
+		if (insuranceDAO.exists(id))
+		{
+			PInsurance insurance = insuranceDAO.get(id);
+			Insurance restInsurance = new Insurance();
+			restInsurance.setName(insurance.getName());
+			restInsurance.setPolicyNumber(insurance.getPolicyNumber());
+			return Response.ok(restInsurance).build();
+		}
+		else
+		{
+			return Response.status(Status.NOT_FOUND).build();
+		}
 	}
 }
