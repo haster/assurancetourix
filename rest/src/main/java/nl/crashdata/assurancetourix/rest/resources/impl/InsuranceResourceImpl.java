@@ -1,6 +1,8 @@
 package nl.crashdata.assurancetourix.rest.resources.impl;
 
 import java.net.URI;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -50,8 +52,10 @@ public class InsuranceResourceImpl implements InsuranceResource
 	@Override
 	public Response getAll()
 	{
-		log.info("getAll called");
-		return null;
+		List<PInsurance> insurances = insuranceDAO.getAll();
+		List<Insurance> restInsurances =
+			insurances.stream().map(this::toRestInsurance).collect(Collectors.toList());
+		return Response.ok(restInsurances).build();
 	}
 
 	@Override
@@ -60,14 +64,20 @@ public class InsuranceResourceImpl implements InsuranceResource
 		if (insuranceDAO.exists(id))
 		{
 			PInsurance insurance = insuranceDAO.get(id);
-			Insurance restInsurance = new Insurance();
-			restInsurance.setName(insurance.getName());
-			restInsurance.setPolicyNumber(insurance.getPolicyNumber());
+			Insurance restInsurance = toRestInsurance(insurance);
 			return Response.ok(restInsurance).build();
 		}
 		else
 		{
 			return Response.status(Status.NOT_FOUND).build();
 		}
+	}
+
+	private Insurance toRestInsurance(PInsurance insurance)
+	{
+		Insurance restInsurance = new Insurance();
+		restInsurance.setName(insurance.getName());
+		restInsurance.setPolicyNumber(insurance.getPolicyNumber());
+		return restInsurance;
 	}
 }

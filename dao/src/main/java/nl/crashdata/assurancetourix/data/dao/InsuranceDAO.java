@@ -1,5 +1,7 @@
 package nl.crashdata.assurancetourix.data.dao;
 
+import java.util.List;
+
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -37,5 +39,13 @@ public class InsuranceDAO
 	public PInsurance get(long id)
 	{
 		return em.find(PInsurance.class, id);
+	}
+
+	public List<PInsurance> getAll()
+	{
+		CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
+		CriteriaQuery<PInsurance> query = criteriaBuilder.createQuery(PInsurance.class);
+		Root<PInsurance> root = query.from(PInsurance.class);
+		return em.createQuery(query).getResultList();
 	}
 }
