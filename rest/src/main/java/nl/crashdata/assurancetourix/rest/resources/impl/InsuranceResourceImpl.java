@@ -89,6 +89,20 @@ public class InsuranceResourceImpl implements InsuranceResource
 		}
 	}
 
+	@Override
+	public Response delete(long id)
+	{
+		if (insuranceDAO.exists(id))
+		{
+			insuranceDAO.delete(insuranceDAO.get(id));
+			return Response.noContent().build();
+		}
+		else
+		{
+			return Response.status(Status.NOT_FOUND).build();
+		}
+	}
+
 	private Insurance toRestInsurance(PInsurance insurance)
 	{
 		Insurance restInsurance = new Insurance();

@@ -45,7 +45,12 @@ public class InsuranceDAO
 	{
 		CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
 		CriteriaQuery<PInsurance> query = criteriaBuilder.createQuery(PInsurance.class);
-		Root<PInsurance> root = query.from(PInsurance.class);
+		query.from(PInsurance.class);
 		return em.createQuery(query).getResultList();
+	}
+
+	public void delete(PInsurance pInsurance)
+	{
+		em.remove(pInsurance);
 	}
 }

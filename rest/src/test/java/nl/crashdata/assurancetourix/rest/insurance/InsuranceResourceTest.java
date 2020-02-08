@@ -8,6 +8,7 @@ import java.net.URL;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
@@ -109,6 +110,58 @@ public class InsuranceResourceTest extends AbstractRestTest
 		assertEquals(TEST_INSURANCE_2.getPolicyNumber(), returnedInsurance2.getPolicyNumber());
 	}
 
+	@Test
+	public void createAndDelete()
+	{
+		Insurance testInsurance3 = createInsurance("Test 3", 1122334455L);
+
+		Response getAllResponse = getAll();
+		assertEquals(Status.OK, getAllResponse.getStatusInfo());
+		GenericType<List<Insurance>> listInsuranceType = new GenericType<>()
+		{
+		};
+		List<Insurance> insurances = getAllResponse.readEntity(listInsuranceType);
+		int countBeforeCreation = insurances.size();
+
+		Response createdResponse = post(testInsurance3);
+		assertEquals(Status.CREATED, createdResponse.getStatusInfo());
+
+		getAllResponse = getAll();
+		assertEquals(Status.OK, getAllResponse.getStatusInfo());
+		insurances = getAllResponse.readEntity(listInsuranceType);
+		int countAfterCreation = insurances.size();
+
+		assertEquals("Count after creation should be one more than count before creation",
+			countBeforeCreation + 1, countAfterCreation);
+
+		long matchingInsuranceCount = insurances.stream()
+			.filter(i -> i.getName().equals(testInsurance3.getName())
+				&& i.getPolicyNumber() == testInsurance3.getPolicyNumber())
+			.collect(Collectors.counting());
+
+		assertEquals("List of all insurances should contain the created insurance exactly once", 1,
+			matchingInsuranceCount);
+
+		URI location = createdResponse.getLocation();
+		Response deletedResponse = delete(parseId(location));
+		assertEquals(Status.NO_CONTENT, deletedResponse.getStatusInfo());
+
+		getAllResponse = getAll();
+		assertEquals(Status.OK, getAllResponse.getStatusInfo());
+		insurances = getAllResponse.readEntity(listInsuranceType);
+		int countAfterDeletion = insurances.size();
+
+		assertEquals("Count after deletion should be one less than count after creation",
+			countAfterCreation - 1, countAfterDeletion);
+
+		matchingInsuranceCount = insurances.stream()
+			.filter(i -> i.getName().equals(testInsurance3.getName())
+				&& i.getPolicyNumber() == testInsurance3.getPolicyNumber())
+			.collect(Collectors.counting());
+		assertEquals("List of all insurances shouldn't contain the deleted insurance", 0,
+			matchingInsuranceCount);
+	}
+
 	private static Insurance createInsurance(String name, long policyNumber)
 	{
 		Insurance insurance = new Insurance();
@@ -162,6 +215,18 @@ public class InsuranceResourceTest extends AbstractRestTest
 			return resteasyClient.target(url.toURI())
 				.proxy(InsuranceResource.class)
 				.update(id, insurance);
+		}
+		catch (NullPointerException | URISyntaxException e)
+		{
+			throw new RuntimeException(e);
+		}
+	}
+
+	private Response delete(long id)
+	{
+		try
+		{
+			return resteasyClient.target(url.toURI()).proxy(InsuranceResource.class).delete(id);
 		}
 		catch (NullPointerException | URISyntaxException e)
 		{
