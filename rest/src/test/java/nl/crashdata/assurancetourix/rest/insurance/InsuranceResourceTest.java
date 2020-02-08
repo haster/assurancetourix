@@ -162,6 +162,19 @@ public class InsuranceResourceTest extends AbstractRestTest
 			matchingInsuranceCount);
 	}
 
+	@Test
+	public void cantGetOrUpdateOrDeleteNonExistingInsurance()
+	{
+		Response getResponse = get(10);
+		assertEquals(Status.NOT_FOUND, getResponse.getStatusInfo());
+
+		Response putResponse = put(10, createInsurance("a", 1L));
+		assertEquals(Status.NOT_FOUND, putResponse.getStatusInfo());
+
+		Response deleteResponse = delete(10);
+		assertEquals(Status.NOT_FOUND, deleteResponse.getStatusInfo());
+	}
+
 	private static Insurance createInsurance(String name, long policyNumber)
 	{
 		Insurance insurance = new Insurance();
