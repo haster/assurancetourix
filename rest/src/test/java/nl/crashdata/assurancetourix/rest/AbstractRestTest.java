@@ -23,6 +23,8 @@ import org.jboss.shrinkwrap.resolver.impl.maven.embedded.BuiltProjectImpl;
 
 public abstract class AbstractRestTest
 {
+	public static final String CHAMELEON_TARGET = "wildfly:16.0.0.Final:managed";
+
 	@ArquillianResource
 	protected URL url;
 
