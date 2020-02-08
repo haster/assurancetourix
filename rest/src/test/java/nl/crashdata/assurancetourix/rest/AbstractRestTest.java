@@ -1,9 +1,16 @@
 package nl.crashdata.assurancetourix.rest;
 
 import java.io.File;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.file.Path;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.arquillian.container.chameleon.deployment.maven.MavenBuildAutomaticDeployment;
+import org.jboss.arquillian.test.api.ArquillianResource;
+import org.jboss.resteasy.client.jaxrs.ResteasyClient;
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.EnterpriseArchive;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
@@ -14,8 +21,15 @@ import org.jboss.shrinkwrap.resolver.api.maven.embedded.EmbeddedMaven;
 import org.jboss.shrinkwrap.resolver.api.maven.embedded.pom.equipped.ConfigurationDistributionStage;
 import org.jboss.shrinkwrap.resolver.impl.maven.embedded.BuiltProjectImpl;
 
-public class AbstractRestTest
+public abstract class AbstractRestTest
 {
+	@ArquillianResource
+	protected URL url;
+
+	protected ResteasyClient resteasyClient = new ResteasyClientBuilder().build();
+
+	private Map<Class< ? >, Object> resourceProxies = new HashMap<>();
+
 	// @Deployment(testable = true)
 	private static Archive< ? > createDeployment()
 	{
@@ -70,5 +84,24 @@ public class AbstractRestTest
 		submodule.setMavenBuildExitCode(builtProject.getMavenBuildExitCode());
 		submodule.setMavenLog(builtProject.getMavenLog());
 		return submodule;
+	}
+
+	@SuppressWarnings("unchecked")
+	protected <T> T proxy(Class<T> proxyInterface)
+	{
+		if (!resourceProxies.containsKey(proxyInterface))
+		{
+			try
+			{
+				T proxy = resteasyClient.target(url.toURI()).proxy(proxyInterface);
+				resourceProxies.put(proxyInterface, proxy);
+			}
+			catch (URISyntaxException e)
+			{
+				throw new RuntimeException(e);
+			}
+		}
+
+		return (T) resourceProxies.get(proxyInterface);
 	}
 }

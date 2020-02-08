@@ -3,8 +3,6 @@ package nl.crashdata.assurancetourix.rest.insurance;
 import static org.junit.Assert.*;
 
 import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -21,9 +19,6 @@ import org.arquillian.container.chameleon.api.ChameleonTarget;
 import org.arquillian.container.chameleon.deployment.api.DeploymentParameters;
 import org.arquillian.container.chameleon.deployment.maven.MavenBuild;
 import org.arquillian.container.chameleon.runner.ArquillianChameleon;
-import org.jboss.arquillian.test.api.ArquillianResource;
-import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -47,18 +42,13 @@ public class InsuranceResourceTest extends AbstractRestTest
 	private static final Insurance TEST_INSURANCE_2 =
 		createInsurance("Test insurance 2", 95135746L);
 
-	private ResteasyClient resteasyClient = new ResteasyClientBuilder().build();
-
-	@ArquillianResource
-	private URL url;
-
 	@Test
 	public void create()
 	{
-		Response createdResponse = post(TEST_INSURANCE_1);
+		Response createdResponse = proxy().create(TEST_INSURANCE_1);
 		assertEquals(Status.CREATED, createdResponse.getStatusInfo());
 
-		Response getAllResponse = getAll();
+		Response getAllResponse = proxy().getAll();
 		assertEquals(Status.OK, getAllResponse.getStatusInfo());
 		GenericType<List<Insurance>> listInsuranceType = new GenericType<>()
 		{
@@ -70,7 +60,7 @@ public class InsuranceResourceTest extends AbstractRestTest
 		assertEquals(TEST_INSURANCE_POLICYNUMBER, insuranceFromList.getPolicyNumber());
 
 		URI location = createdResponse.getLocation();
-		Response getResponse = get(parseId(location));
+		Response getResponse = proxy().get(parseId(location));
 		assertEquals(Status.OK, getResponse.getStatusInfo());
 
 		Insurance returnedInsurance = getResponse.readEntity(Insurance.class);
@@ -82,14 +72,14 @@ public class InsuranceResourceTest extends AbstractRestTest
 	@Test
 	public void createAndUpdate()
 	{
-		Response createdResponse = post(TEST_INSURANCE_2);
+		Response createdResponse = proxy().create(TEST_INSURANCE_2);
 		assertEquals(Status.CREATED, createdResponse.getStatusInfo());
 
-		Response getAllResponse = getAll();
+		Response getAllResponse = proxy().getAll();
 		assertEquals(Status.OK, getAllResponse.getStatusInfo());
 
 		URI location = createdResponse.getLocation();
-		Response getResponse = get(parseId(location));
+		Response getResponse = proxy().get(parseId(location));
 		assertEquals(Status.OK, getResponse.getStatusInfo());
 
 		Insurance returnedInsurance = getResponse.readEntity(Insurance.class);
@@ -98,10 +88,10 @@ public class InsuranceResourceTest extends AbstractRestTest
 		assertEquals(TEST_INSURANCE_2.getPolicyNumber(), returnedInsurance.getPolicyNumber());
 
 		returnedInsurance.setName("Test");
-		Response putResponse = put(parseId(location), returnedInsurance);
+		Response putResponse = proxy().update(parseId(location), returnedInsurance);
 		assertEquals(Status.NO_CONTENT, putResponse.getStatusInfo());
 
-		Response getResponse2 = get(parseId(location));
+		Response getResponse2 = proxy().get(parseId(location));
 		assertEquals(Status.OK, getResponse2.getStatusInfo());
 
 		Insurance returnedInsurance2 = getResponse2.readEntity(Insurance.class);
@@ -115,7 +105,7 @@ public class InsuranceResourceTest extends AbstractRestTest
 	{
 		Insurance testInsurance3 = createInsurance("Test 3", 1122334455L);
 
-		Response getAllResponse = getAll();
+		Response getAllResponse = proxy().getAll();
 		assertEquals(Status.OK, getAllResponse.getStatusInfo());
 		GenericType<List<Insurance>> listInsuranceType = new GenericType<>()
 		{
@@ -123,10 +113,10 @@ public class InsuranceResourceTest extends AbstractRestTest
 		List<Insurance> insurances = getAllResponse.readEntity(listInsuranceType);
 		int countBeforeCreation = insurances.size();
 
-		Response createdResponse = post(testInsurance3);
+		Response createdResponse = proxy().create(testInsurance3);
 		assertEquals(Status.CREATED, createdResponse.getStatusInfo());
 
-		getAllResponse = getAll();
+		getAllResponse = proxy().getAll();
 		assertEquals(Status.OK, getAllResponse.getStatusInfo());
 		insurances = getAllResponse.readEntity(listInsuranceType);
 		int countAfterCreation = insurances.size();
@@ -143,10 +133,10 @@ public class InsuranceResourceTest extends AbstractRestTest
 			matchingInsuranceCount);
 
 		URI location = createdResponse.getLocation();
-		Response deletedResponse = delete(parseId(location));
+		Response deletedResponse = proxy().delete(parseId(location));
 		assertEquals(Status.NO_CONTENT, deletedResponse.getStatusInfo());
 
-		getAllResponse = getAll();
+		getAllResponse = proxy().getAll();
 		assertEquals(Status.OK, getAllResponse.getStatusInfo());
 		insurances = getAllResponse.readEntity(listInsuranceType);
 		int countAfterDeletion = insurances.size();
@@ -165,20 +155,20 @@ public class InsuranceResourceTest extends AbstractRestTest
 	@Test
 	public void cantGetOrUpdateOrDeleteNonExistingInsurance()
 	{
-		Response getResponse = get(10);
+		Response getResponse = proxy().get(10);
 		assertEquals(Status.NOT_FOUND, getResponse.getStatusInfo());
 
-		Response putResponse = put(10, createInsurance("a", 1L));
+		Response putResponse = proxy().update(10, createInsurance("a", 1L));
 		assertEquals(Status.NOT_FOUND, putResponse.getStatusInfo());
 
-		Response deleteResponse = delete(10);
+		Response deleteResponse = proxy().delete(10);
 		assertEquals(Status.NOT_FOUND, deleteResponse.getStatusInfo());
 	}
 
 	@Test
 	public void getAllAndUpdateOne()
 	{
-		Response getAllResponse = getAll();
+		Response getAllResponse = proxy().getAll();
 		assertEquals(Status.OK, getAllResponse.getStatusInfo());
 		GenericType<List<Insurance>> listInsuranceType = new GenericType<>()
 		{
@@ -187,10 +177,10 @@ public class InsuranceResourceTest extends AbstractRestTest
 
 		if (insurances.isEmpty())
 		{
-			Response createdResponse = post(TEST_INSURANCE_1);
+			Response createdResponse = proxy().create(TEST_INSURANCE_1);
 			assertEquals(Status.CREATED, createdResponse.getStatusInfo());
 
-			getAll();
+			proxy().getAll();
 			assertEquals(Status.OK, getAllResponse.getStatusInfo());
 			insurances = getAllResponse.readEntity(listInsuranceType);
 		}
@@ -198,7 +188,7 @@ public class InsuranceResourceTest extends AbstractRestTest
 		Insurance insurance = insurances.get(0);
 		insurance.setName("1 tseT");
 
-		put(parseId(insurance.getIdentifier()), insurance);
+		proxy().update(parseId(insurance.getIdentifier()), insurance);
 	}
 
 	private static Insurance createInsurance(String name, long policyNumber)
@@ -209,68 +199,9 @@ public class InsuranceResourceTest extends AbstractRestTest
 		return insurance;
 	}
 
-	private Response post(Insurance insurance)
+	private InsuranceResource proxy()
 	{
-		try
-		{
-			return resteasyClient.target(url.toURI())
-				.proxy(InsuranceResource.class)
-				.create(insurance);
-		}
-		catch (NullPointerException | URISyntaxException e)
-		{
-			throw new RuntimeException(e);
-		}
-	}
-
-	private Response getAll()
-	{
-		try
-		{
-			return resteasyClient.target(url.toURI()).proxy(InsuranceResource.class).getAll();
-		}
-		catch (NullPointerException | URISyntaxException e)
-		{
-			throw new RuntimeException(e);
-		}
-	}
-
-	private Response get(long id)
-	{
-		try
-		{
-			return resteasyClient.target(url.toURI()).proxy(InsuranceResource.class).get(id);
-		}
-		catch (NullPointerException | URISyntaxException e)
-		{
-			throw new RuntimeException(e);
-		}
-	}
-
-	private Response put(long id, Insurance insurance)
-	{
-		try
-		{
-			return resteasyClient.target(url.toURI())
-				.proxy(InsuranceResource.class)
-				.update(id, insurance);
-		}
-		catch (NullPointerException | URISyntaxException e)
-		{
-			throw new RuntimeException(e);
-		}
-	}
-
-	private Response delete(long id)
-	{
-		try
-		{
-			return resteasyClient.target(url.toURI()).proxy(InsuranceResource.class).delete(id);
-		}
-		catch (NullPointerException | URISyntaxException e)
-		{
-			throw new RuntimeException(e);
-		}
+		return proxy(InsuranceResource.class);
 	}
 
 	private long parseId(URI location)
