@@ -38,11 +38,8 @@ public class InsuranceResourceImpl implements InsuranceResource
 
 		insuranceDAO.save(pInsurance);
 
-		URI location = UriBuilder.fromUri(currentRequest.getRequestURI())
-			.path("/{id}")
-			.build(pInsurance.getId());
-
-		return Response.created(location).entity(insurance).build();
+		insurance = toRestInsurance(pInsurance);
+		return Response.created(insurance.getIdentifier()).entity(insurance).build();
 	}
 
 	@Override
@@ -106,8 +103,17 @@ public class InsuranceResourceImpl implements InsuranceResource
 	private Insurance toRestInsurance(PInsurance insurance)
 	{
 		Insurance restInsurance = new Insurance();
+		URI toLocationUri = toLocationUri(insurance);
+		restInsurance.setIdentifier(toLocationUri);
 		restInsurance.setName(insurance.getName());
 		restInsurance.setPolicyNumber(insurance.getPolicyNumber());
 		return restInsurance;
+	}
+
+	private URI toLocationUri(PInsurance insurance)
+	{
+		return UriBuilder.fromUri(currentRequest.getRequestURI())
+			.path("/{id}")
+			.build(insurance.getId());
 	}
 }

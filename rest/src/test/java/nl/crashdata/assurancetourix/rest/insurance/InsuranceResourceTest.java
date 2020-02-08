@@ -175,6 +175,32 @@ public class InsuranceResourceTest extends AbstractRestTest
 		assertEquals(Status.NOT_FOUND, deleteResponse.getStatusInfo());
 	}
 
+	@Test
+	public void getAllAndUpdateOne()
+	{
+		Response getAllResponse = getAll();
+		assertEquals(Status.OK, getAllResponse.getStatusInfo());
+		GenericType<List<Insurance>> listInsuranceType = new GenericType<>()
+		{
+		};
+		List<Insurance> insurances = getAllResponse.readEntity(listInsuranceType);
+
+		if (insurances.isEmpty())
+		{
+			Response createdResponse = post(TEST_INSURANCE_1);
+			assertEquals(Status.CREATED, createdResponse.getStatusInfo());
+
+			getAll();
+			assertEquals(Status.OK, getAllResponse.getStatusInfo());
+			insurances = getAllResponse.readEntity(listInsuranceType);
+		}
+
+		Insurance insurance = insurances.get(0);
+		insurance.setName("1 tseT");
+
+		put(parseId(insurance.getIdentifier()), insurance);
+	}
+
 	private static Insurance createInsurance(String name, long policyNumber)
 	{
 		Insurance insurance = new Insurance();
