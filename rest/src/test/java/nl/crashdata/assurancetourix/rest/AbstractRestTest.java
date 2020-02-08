@@ -4,7 +4,6 @@ import java.io.File;
 import java.nio.file.Path;
 
 import org.arquillian.container.chameleon.deployment.maven.MavenBuildAutomaticDeployment;
-import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.EnterpriseArchive;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
@@ -17,7 +16,7 @@ import org.jboss.shrinkwrap.resolver.impl.maven.embedded.BuiltProjectImpl;
 
 public class AbstractRestTest
 {
-	@Deployment
+	// @Deployment(testable = true)
 	private static Archive< ? > createDeployment()
 	{
 		EnterpriseArchive ear = buildEar();

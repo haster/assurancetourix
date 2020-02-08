@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.transaction.Transactional;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -18,6 +17,8 @@ import nl.crashdata.assurancetourix.rest.AbstractRestTest;
 import nl.crashdata.assurancetourix.rest.entities.Insurance;
 import nl.crashdata.assurancetourix.rest.resources.InsuranceResource;
 import org.arquillian.container.chameleon.api.ChameleonTarget;
+import org.arquillian.container.chameleon.deployment.api.DeploymentParameters;
+import org.arquillian.container.chameleon.deployment.maven.MavenBuild;
 import org.arquillian.container.chameleon.runner.ArquillianChameleon;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
@@ -26,10 +27,25 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 @RunWith(ArquillianChameleon.class)
-@ChameleonTarget("wildfly:16.0.0.Final:managed")
-@Transactional
+@ChameleonTarget(value = "wildfly:16.0.0.Final:managed")
+// @ChameleonTarget(value = "wildfly:16.0.0.Final:managed",
+// customProperties = {@Property(name = "javaVmArguments",
+// value = "-Xrunjdwp:transport=dt_socket,address=8787,server=y,suspend=y")}
+// )
+@MavenBuild(pom = "../pom.xml", module = "ear")
+@DeploymentParameters(testable = false)
 public class InsuranceResourceTest extends AbstractRestTest
 {
+	private static final long TEST_INSURANCE_POLICYNUMBER = 123456789L;
+
+	private static final String TEST_INSURANCE_NAME = "Test insurance 1";
+
+	private static final Insurance TEST_INSURANCE_1 =
+		createInsurance(TEST_INSURANCE_NAME, TEST_INSURANCE_POLICYNUMBER);
+
+	private static final Insurance TEST_INSURANCE_2 =
+		createInsurance("Test insurance 2", 95135746L);
+
 	private ResteasyClient resteasyClient = new ResteasyClientBuilder().build();
 
 	@ArquillianResource
@@ -38,18 +54,19 @@ public class InsuranceResourceTest extends AbstractRestTest
 	@Test
 	public void create()
 	{
-		Insurance insurance = new Insurance();
-		insurance.setName("Test insurance");
-		insurance.setPolicyNumber(123456789L);
-
-		Response createdResponse = post(insurance);
+		Response createdResponse = post(TEST_INSURANCE_1);
 		assertEquals(Status.CREATED, createdResponse.getStatusInfo());
 
 		Response getAllResponse = getAll();
 		assertEquals(Status.OK, getAllResponse.getStatusInfo());
-		GenericType<List<Insurance>> listInsuranceType = listOfType(Insurance.class);
+		GenericType<List<Insurance>> listInsuranceType = new GenericType<>()
+		{
+		};
 		List<Insurance> insurances = getAllResponse.readEntity(listInsuranceType);
 		assertEquals(1, insurances.size());
+		Insurance insuranceFromList = insurances.get(0);
+		assertEquals(TEST_INSURANCE_NAME, insuranceFromList.getName());
+		assertEquals(TEST_INSURANCE_POLICYNUMBER, insuranceFromList.getPolicyNumber());
 
 		URI location = createdResponse.getLocation();
 		Response getResponse = get(parseId(location));
@@ -57,25 +74,18 @@ public class InsuranceResourceTest extends AbstractRestTest
 
 		Insurance returnedInsurance = getResponse.readEntity(Insurance.class);
 		assertNotNull(returnedInsurance);
-		assertEquals("Test insurance", returnedInsurance.getName());
+		assertEquals(TEST_INSURANCE_NAME, returnedInsurance.getName());
 		assertEquals(123456789L, returnedInsurance.getPolicyNumber());
 	}
 
 	@Test
 	public void createAndUpdate()
 	{
-		Insurance insurance = new Insurance();
-		insurance.setName("Test insurance");
-		insurance.setPolicyNumber(123456789L);
-
-		Response createdResponse = post(insurance);
+		Response createdResponse = post(TEST_INSURANCE_2);
 		assertEquals(Status.CREATED, createdResponse.getStatusInfo());
 
 		Response getAllResponse = getAll();
 		assertEquals(Status.OK, getAllResponse.getStatusInfo());
-		GenericType<List<Insurance>> listInsuranceType = listOfType(Insurance.class);
-		List<Insurance> insurances = getAllResponse.readEntity(listInsuranceType);
-		assertEquals(1, insurances.size());
 
 		URI location = createdResponse.getLocation();
 		Response getResponse = get(parseId(location));
@@ -83,8 +93,28 @@ public class InsuranceResourceTest extends AbstractRestTest
 
 		Insurance returnedInsurance = getResponse.readEntity(Insurance.class);
 		assertNotNull(returnedInsurance);
-		assertEquals("Test insurance", returnedInsurance.getName());
-		assertEquals(123456789L, returnedInsurance.getPolicyNumber());
+		assertEquals(TEST_INSURANCE_2.getName(), returnedInsurance.getName());
+		assertEquals(TEST_INSURANCE_2.getPolicyNumber(), returnedInsurance.getPolicyNumber());
+
+		returnedInsurance.setName("Test");
+		Response putResponse = put(parseId(location), returnedInsurance);
+		assertEquals(Status.NO_CONTENT, putResponse.getStatusInfo());
+
+		Response getResponse2 = get(parseId(location));
+		assertEquals(Status.OK, getResponse2.getStatusInfo());
+
+		Insurance returnedInsurance2 = getResponse2.readEntity(Insurance.class);
+		assertNotNull(returnedInsurance2);
+		assertEquals("Test", returnedInsurance2.getName());
+		assertEquals(TEST_INSURANCE_2.getPolicyNumber(), returnedInsurance2.getPolicyNumber());
+	}
+
+	private static Insurance createInsurance(String name, long policyNumber)
+	{
+		Insurance insurance = new Insurance();
+		insurance.setName(name);
+		insurance.setPolicyNumber(policyNumber);
+		return insurance;
 	}
 
 	private Response post(Insurance insurance)
@@ -125,18 +155,25 @@ public class InsuranceResourceTest extends AbstractRestTest
 		}
 	}
 
+	private Response put(long id, Insurance insurance)
+	{
+		try
+		{
+			return resteasyClient.target(url.toURI())
+				.proxy(InsuranceResource.class)
+				.update(id, insurance);
+		}
+		catch (NullPointerException | URISyntaxException e)
+		{
+			throw new RuntimeException(e);
+		}
+	}
+
 	private long parseId(URI location)
 	{
 		Pattern pattern = Pattern.compile("\\d{4,}");
 		Matcher matcher = pattern.matcher(location.getPath());
 		matcher.find();
 		return Long.parseLong(matcher.group(matcher.groupCount()));
-	}
-
-	private static <T> GenericType<List<T>> listOfType(Class<T> elementType)
-	{
-		return new GenericType<>()
-		{
-		};
 	}
 }
