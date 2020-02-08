@@ -1,17 +1,7 @@
 package nl.crashdata.assurancetourix.rest.entities;
 
-import java.net.URI;
-
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
-
-@XmlRootElement
-@XmlAccessorType(XmlAccessType.FIELD)
-public class Insurance
+public class Insurance extends RestEntity
 {
-	private URI identifier;
-
 	private String name;
 
 	private long policyNumber;
@@ -34,15 +24,5 @@ public class Insurance
 	public void setPolicyNumber(long policyNumber)
 	{
 		this.policyNumber = policyNumber;
-	}
-
-	public URI getIdentifier()
-	{
-		return identifier;
-	}
-
-	public void setIdentifier(URI location)
-	{
-		this.identifier = location;
 	}
 }
