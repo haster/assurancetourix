@@ -36,7 +36,7 @@ public class InsuranceResourceImpl extends CrudResourceImpl<Insurance, PInsuranc
 	{
 		Insurance restInsurance = new Insurance();
 		URI toLocationUri = toLocationUri(pEntity);
-		restInsurance.setIdentifier(toLocationUri);
+		restInsurance.self(toLocationUri);
 		restInsurance.setName(pEntity.getName());
 		restInsurance.setPolicyNumber(pEntity.getPolicyNumber());
 		return restInsurance;

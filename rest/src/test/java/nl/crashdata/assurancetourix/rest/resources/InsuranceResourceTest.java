@@ -188,7 +188,7 @@ public class InsuranceResourceTest extends AbstractRestTest
 		Insurance insurance = insurances.get(0);
 		insurance.setName("1 tseT");
 
-		proxy().update(parseId(insurance.getIdentifier()), insurance);
+		proxy().update(parseId(insurance.self()), insurance);
 	}
 
 	private static Insurance createInsurance(String name, long policyNumber)

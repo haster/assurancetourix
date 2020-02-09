@@ -25,7 +25,7 @@ public abstract class CrudResourceImpl<R extends RestEntity, T extends AbstractE
 		getDao().save(persistentEntity);
 
 		restEntity = toRest(persistentEntity);
-		return Response.created(restEntity.getIdentifier()).entity(restEntity).build();
+		return Response.created(restEntity.self()).entity(restEntity).build();
 	}
 
 	@Override
