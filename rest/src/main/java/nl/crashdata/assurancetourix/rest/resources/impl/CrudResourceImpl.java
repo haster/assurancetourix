@@ -1,11 +1,15 @@
 package nl.crashdata.assurancetourix.rest.resources.impl;
 
+import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.UriBuilder;
 
 import nl.crashdata.assurancetourix.data.dao.AbstractDAO;
 import nl.crashdata.assurancetourix.data.entities.AbstractEntity;
@@ -15,6 +19,9 @@ import nl.crashdata.assurancetourix.rest.resources.CrudResource;
 public abstract class CrudResourceImpl<R extends RestEntity, T extends AbstractEntity,
 		D extends AbstractDAO<T>> implements CrudResource<R>
 {
+	@Context
+	private HttpServletRequest currentRequest;
+
 	protected abstract D getDao();
 
 	@Override
@@ -85,7 +92,19 @@ public abstract class CrudResourceImpl<R extends RestEntity, T extends AbstractE
 		}
 	}
 
-	protected abstract R toRest(T pEntity);
+	protected abstract R toRest(T persistentEntity);
 
-	protected abstract T toPersistent(R entity);
+	protected abstract T toPersistent(R restEntity);
+
+	protected void setDefaultFields(T persistentEntity, R restEntity)
+	{
+		restEntity.self(toLocationUri(persistentEntity));
+	}
+
+	protected URI toLocationUri(T persistentEntity)
+	{
+		return UriBuilder.fromUri(currentRequest.getRequestURI())
+			.path("/{id}")
+			.build(persistentEntity.getId());
+	}
 }

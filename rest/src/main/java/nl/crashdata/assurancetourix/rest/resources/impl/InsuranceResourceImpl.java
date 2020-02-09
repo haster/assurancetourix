@@ -1,13 +1,8 @@
 package nl.crashdata.assurancetourix.rest.resources.impl;
 
-import java.net.URI;
-
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.UriBuilder;
 
 import nl.crashdata.assurancetourix.data.dao.InsuranceDAO;
 import nl.crashdata.assurancetourix.data.entities.PInsurance;
@@ -22,9 +17,6 @@ public class InsuranceResourceImpl extends CrudResourceImpl<Insurance, PInsuranc
 	@EJB
 	private InsuranceDAO insuranceDAO;
 
-	@Context
-	private HttpServletRequest currentRequest;
-
 	@Override
 	protected InsuranceDAO getDao()
 	{
@@ -35,8 +27,7 @@ public class InsuranceResourceImpl extends CrudResourceImpl<Insurance, PInsuranc
 	protected Insurance toRest(PInsurance pEntity)
 	{
 		Insurance restInsurance = new Insurance();
-		URI toLocationUri = toLocationUri(pEntity);
-		restInsurance.self(toLocationUri);
+		setDefaultFields(pEntity, restInsurance);
 		restInsurance.setName(pEntity.getName());
 		restInsurance.setPolicyNumber(pEntity.getPolicyNumber());
 		return restInsurance;
@@ -49,12 +40,5 @@ public class InsuranceResourceImpl extends CrudResourceImpl<Insurance, PInsuranc
 		pInsurance.setName(entity.getName());
 		pInsurance.setPolicyNumber(entity.getPolicyNumber());
 		return pInsurance;
-	}
-
-	private URI toLocationUri(PInsurance insurance)
-	{
-		return UriBuilder.fromUri(currentRequest.getRequestURI())
-			.path("/{id}")
-			.build(insurance.getId());
 	}
 }
