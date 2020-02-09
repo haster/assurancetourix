@@ -6,15 +6,18 @@ import javax.persistence.*;
 @Access(AccessType.PROPERTY)
 public class AbstractEntity
 {
+	public static final int DEFAULT_NUMERIC_LENGTH = 11;
+
+	public static final int DEFAULT_TEXT_LENGTH = 255;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE)
 	@Access(AccessType.FIELD)
-	@Column(name = "id", nullable = false)
+	@Column(name = "id", nullable = false, precision = DEFAULT_NUMERIC_LENGTH)
 	private Long id;
 
 	@Version
-	@Column(name = "version", nullable = true)
+	@Column(name = "version", nullable = true, precision = DEFAULT_NUMERIC_LENGTH)
 	private Long version;
 
 	public AbstractEntity()

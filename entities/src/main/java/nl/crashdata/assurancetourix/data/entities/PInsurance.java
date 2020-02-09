@@ -10,11 +10,11 @@ import javax.persistence.Table;
 public class PInsurance extends AbstractEntity
 {
 	@Basic(optional = false)
-	@Column(name = "name", nullable = false, length = 255)
+	@Column(name = "name", nullable = false, length = DEFAULT_TEXT_LENGTH)
 	private String name;
 
 	@Basic(optional = false)
-	@Column(name = "policyNumber", nullable = false, precision = 11)
+	@Column(name = "policyNumber", nullable = false, precision = DEFAULT_NUMERIC_LENGTH)
 	private long policyNumber;
 
 	public long getPolicyNumber()
