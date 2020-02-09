@@ -23,4 +23,22 @@
         		</column>
         	</createTable>
         </changeSet>
+        
+        <changeSet id="add-person-table" author="haster">
+        	<createTable tableName="PERSON">
+        		<column name="ID" type="bigint">
+        			<constraints primaryKey="true" primaryKeyName="PK_PERSON" nullable="false"/>
+        		</column>
+        		<column name="VERSION" type="bigint"/>
+        		<column name="FIRSTNAME" type="varchar(255)">
+        			<constraints nullable="false"/>
+        		</column>
+        		<column name="LASTNAME" type="varchar(255)">
+        			<constraints nullable="false"/>
+        		</column>
+        		<column name="EMAILADDRESS" type="varchar(255)">
+        			<constraints nullable="false"/>
+        		</column>
+        	</createTable>
+        </changeSet>
 </databaseChangeLog>
