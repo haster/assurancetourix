@@ -1,17 +1,12 @@
 package nl.crashdata.assurancetourix.rest.resources.impl;
 
 import java.net.URI;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.GenericEntity;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriBuilder;
 
 import nl.crashdata.assurancetourix.data.dao.InsuranceDAO;
@@ -21,7 +16,8 @@ import nl.crashdata.assurancetourix.rest.resources.InsuranceResource;
 
 @Stateless
 @Transactional
-public class InsuranceResourceImpl implements InsuranceResource
+public class InsuranceResourceImpl extends CrudResourceImpl<Insurance, PInsurance, InsuranceDAO>
+		implements InsuranceResource
 {
 	@EJB
 	private InsuranceDAO insuranceDAO;
@@ -30,84 +26,29 @@ public class InsuranceResourceImpl implements InsuranceResource
 	private HttpServletRequest currentRequest;
 
 	@Override
-	public Response create(Insurance insurance)
+	protected InsuranceDAO getDao()
 	{
-		PInsurance pInsurance = new PInsurance();
-		pInsurance.setName(insurance.getName());
-		pInsurance.setPolicyNumber(insurance.getPolicyNumber());
-
-		insuranceDAO.save(pInsurance);
-
-		insurance = toRestInsurance(pInsurance);
-		return Response.created(insurance.getIdentifier()).entity(insurance).build();
+		return insuranceDAO;
 	}
 
 	@Override
-	public Response getAll()
-	{
-		List<PInsurance> insurances = insuranceDAO.getAll();
-		List<Insurance> restInsurances =
-			insurances.stream().map(this::toRestInsurance).collect(Collectors.toList());
-		GenericEntity<List<Insurance>> genericEntity = new GenericEntity<>(restInsurances)
-		{
-		};
-		return Response.ok(genericEntity).build();
-	}
-
-	@Override
-	public Response get(long id)
-	{
-		if (insuranceDAO.exists(id))
-		{
-			PInsurance insurance = insuranceDAO.get(id);
-			Insurance restInsurance = toRestInsurance(insurance);
-			return Response.ok(restInsurance).build();
-		}
-		else
-		{
-			return Response.status(Status.NOT_FOUND).build();
-		}
-	}
-
-	@Override
-	public Response update(long id, Insurance insurance)
-	{
-		if (insuranceDAO.exists(id))
-		{
-			PInsurance pInsurance = insuranceDAO.get(id);
-			pInsurance.setName(insurance.getName());
-			pInsurance.setPolicyNumber(insurance.getPolicyNumber());
-			insuranceDAO.save(pInsurance);
-			return Response.noContent().build();
-		}
-		else
-		{
-			return Response.status(Status.NOT_FOUND).build();
-		}
-	}
-
-	@Override
-	public Response delete(long id)
-	{
-		if (insuranceDAO.exists(id))
-		{
-			insuranceDAO.delete(insuranceDAO.get(id));
-			return Response.noContent().build();
-		}
-		else
-		{
-			return Response.status(Status.NOT_FOUND).build();
-		}
-	}
-
-	private Insurance toRestInsurance(PInsurance insurance)
+	protected Insurance toRest(PInsurance pEntity)
 	{
 		Insurance restInsurance = new Insurance();
-		URI toLocationUri = toLocationUri(insurance);
+		URI toLocationUri = toLocationUri(pEntity);
 		restInsurance.setIdentifier(toLocationUri);
-		restInsurance.setName(insurance.getName());
-		restInsurance.setPolicyNumber(insurance.getPolicyNumber());
+		restInsurance.setName(pEntity.getName());
+		restInsurance.setPolicyNumber(pEntity.getPolicyNumber());
 		return restInsurance;
+	}
+
+	@Override
+	protected PInsurance toPersistent(Insurance entity)
+	{
+		PInsurance pInsurance = new PInsurance();
+		pInsurance.setName(entity.getName());
+		pInsurance.setPolicyNumber(entity.getPolicyNumber());
+		return pInsurance;
 	}
 
 	private URI toLocationUri(PInsurance insurance)
