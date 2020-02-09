@@ -1,6 +1,7 @@
 package nl.crashdata.assurancetourix.data.dao;
 
 import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -22,8 +23,12 @@ public class AbstractDAO<T extends AbstractEntity>
 	@SuppressWarnings("unchecked")
 	protected AbstractDAO()
 	{
-		entityClass = (Class<T>) ((ParameterizedType) getClass().getGenericSuperclass())
-			.getActualTypeArguments()[0];
+		Type type = getClass().getGenericSuperclass();
+		while (!(type instanceof ParameterizedType) && type instanceof Class< ? >)
+		{
+			type = ((Class< ? >) type).getGenericSuperclass();
+		}
+		entityClass = (Class<T>) (((ParameterizedType) type).getActualTypeArguments()[0]);
 	}
 
 	public void save(T entity)
@@ -57,6 +62,11 @@ public class AbstractDAO<T extends AbstractEntity>
 	public void delete(T entity)
 	{
 		em.remove(entity);
+	}
+
+	public T merge(T persistentEntity)
+	{
+		return em.merge(persistentEntity);
 	}
 
 }
