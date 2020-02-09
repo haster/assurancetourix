@@ -2,13 +2,8 @@ package nl.crashdata.assurancetourix.rest.entities;
 
 import java.net.URI;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
 
-@XmlRootElement
-@XmlAccessorType(XmlAccessType.FIELD)
 public abstract class RestEntity
 {
 	@XmlElement(required = true)
@@ -21,6 +16,7 @@ public abstract class RestEntity
 	public RestEntity()
 	{
 		super();
+		_type = getClass().getCanonicalName();
 	}
 
 	public URI self()
