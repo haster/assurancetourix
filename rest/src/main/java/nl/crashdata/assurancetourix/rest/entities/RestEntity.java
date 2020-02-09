@@ -9,7 +9,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-public class RestEntity
+public abstract class RestEntity
 {
 	@XmlElement(required = true)
 	private String _type;
