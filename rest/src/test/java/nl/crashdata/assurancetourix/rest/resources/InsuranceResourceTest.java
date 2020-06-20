@@ -180,7 +180,7 @@ public class InsuranceResourceTest extends AbstractRestTest
 			Response createdResponse = proxy().create(TEST_INSURANCE_1);
 			assertEquals(Status.CREATED, createdResponse.getStatusInfo());
 
-			proxy().getAll();
+			getAllResponse = proxy().getAll();
 			assertEquals(Status.OK, getAllResponse.getStatusInfo());
 			insurances = getAllResponse.readEntity(listInsuranceType);
 		}
