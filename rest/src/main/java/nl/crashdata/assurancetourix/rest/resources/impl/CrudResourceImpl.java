@@ -4,23 +4,26 @@ import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.core.UriBuilder;
+import javax.ws.rs.core.UriInfo;
 
 import nl.crashdata.assurancetourix.data.dao.AbstractDAO;
 import nl.crashdata.assurancetourix.data.entities.AbstractEntity;
 import nl.crashdata.assurancetourix.rest.entities.RestEntity;
 import nl.crashdata.assurancetourix.rest.resources.CrudResource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class CrudResourceImpl<R extends RestEntity, T extends AbstractEntity,
 		D extends AbstractDAO<T>> implements CrudResource<R>
 {
+	private final Logger log = LoggerFactory.getLogger(getClass());
+
 	@Context
-	private HttpServletRequest currentRequest;
+	private UriInfo currentRequestUriInfo;
 
 	protected abstract D getDao();
 
@@ -98,12 +101,14 @@ public abstract class CrudResourceImpl<R extends RestEntity, T extends AbstractE
 
 	protected void setDefaultFields(T persistentEntity, R restEntity)
 	{
+		log.info(String.format("Location for %s with id %d is %s", persistentEntity.getClass(),
+			persistentEntity.getId(), toLocationUri(persistentEntity)));
 		restEntity.self(toLocationUri(persistentEntity));
 	}
 
 	protected URI toLocationUri(T persistentEntity)
 	{
-		return UriBuilder.fromUri(currentRequest.getRequestURI())
+		return currentRequestUriInfo.getAbsolutePathBuilder()
 			.path("/{id}")
 			.build(persistentEntity.getId());
 	}

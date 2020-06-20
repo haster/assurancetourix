@@ -1,6 +1,12 @@
 package nl.crashdata.assurancetourix.rest.resources;
 
 import static nl.crashdata.assurancetourix.rest.AbstractRestTest.*;
+import static org.junit.Assert.*;
+
+import java.net.URI;
+
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import nl.crashdata.assurancetourix.rest.AbstractRestTest;
 import nl.crashdata.assurancetourix.rest.entities.Person;
@@ -28,6 +34,14 @@ public class PersonResourceTest extends AbstractRestTest
 		person.setFirstName("Tinus");
 		person.setLastName("Test");
 		person.setEmailAddress("t.test@example.nl");
+
+		Response createdResponse = proxy().create(person);
+		assertEquals(Status.CREATED, createdResponse.getStatusInfo());
+
+		URI location = createdResponse.getLocation();
+		person = createdResponse.readEntity(Person.class);
+		assertEquals("Self of a freshly created restentity should be equal to its location",
+			location, person.self());
 	}
 
 	private PersonResource proxy()
