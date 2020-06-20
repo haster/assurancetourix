@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jboss-deployment-structure>
+    <deployment>
+        <exclusions>
+            <module name="org.jboss.resteasy.resteasy-json-binding-provider"/>
+        </exclusions>
+    </deployment>
+    <sub-deployment name="assurancetourix-dao.jar">
+        <exclusions>
+            <module name="org.jboss.resteasy.resteasy-json-binding-provider"/>
+        </exclusions>
+    </sub-deployment> 
+    <sub-deployment name="assurancetourix-rest.war">
+        <exclusions>
+            <module name="org.jboss.resteasy.resteasy-json-binding-provider"/>
+        </exclusions>
+    </sub-deployment>    
+</jboss-deployment-structure>
