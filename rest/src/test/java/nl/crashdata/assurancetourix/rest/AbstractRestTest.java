@@ -1,11 +1,14 @@
 package nl.crashdata.assurancetourix.rest;
 
 import java.io.File;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.arquillian.container.chameleon.deployment.maven.MavenBuildAutomaticDeployment;
 import org.jboss.arquillian.test.api.ArquillianResource;
@@ -105,5 +108,13 @@ public abstract class AbstractRestTest
 		}
 
 		return (T) resourceProxies.get(proxyInterface);
+	}
+
+	protected long parseId(URI location)
+	{
+		Pattern pattern = Pattern.compile("\\d{4,}");
+		Matcher matcher = pattern.matcher(location.getPath());
+		matcher.find();
+		return Long.parseLong(matcher.group(matcher.groupCount()));
 	}
 }

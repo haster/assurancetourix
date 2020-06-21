@@ -5,8 +5,6 @@ import static org.junit.Assert.*;
 
 import java.net.URI;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import javax.ws.rs.core.GenericType;
@@ -202,13 +200,5 @@ public class InsuranceResourceTest extends AbstractRestTest
 	private InsuranceResource proxy()
 	{
 		return proxy(InsuranceResource.class);
-	}
-
-	private long parseId(URI location)
-	{
-		Pattern pattern = Pattern.compile("\\d{4,}");
-		Matcher matcher = pattern.matcher(location.getPath());
-		matcher.find();
-		return Long.parseLong(matcher.group(matcher.groupCount()));
 	}
 }

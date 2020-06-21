@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.GenericEntity;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
@@ -101,15 +102,23 @@ public abstract class CrudResourceImpl<R extends RestEntity, T extends AbstractE
 
 	protected void setDefaultFields(T persistentEntity, R restEntity)
 	{
-		log.info(String.format("Location for %s with id %d is %s", persistentEntity.getClass(),
-			persistentEntity.getId(), toLocationUri(persistentEntity)));
 		restEntity.self(toLocationUri(persistentEntity));
 	}
 
 	protected URI toLocationUri(T persistentEntity)
 	{
+		MultivaluedMap<String, String> pathParameters = currentRequestUriInfo.getPathParameters();
+
+		if (pathParameters.containsKey("id"))
+		{
+			return currentRequestUriInfo.getAbsolutePathBuilder()
+				.path("..")
+				.path("{id}")
+				.build(persistentEntity.getId())
+				.normalize();
+		}
 		return currentRequestUriInfo.getAbsolutePathBuilder()
-			.path("/{id}")
+			.path("{id}")
 			.build(persistentEntity.getId());
 	}
 }

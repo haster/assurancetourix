@@ -42,6 +42,14 @@ public class PersonResourceTest extends AbstractRestTest
 		person = createdResponse.readEntity(Person.class);
 		assertEquals("Self of a freshly created restentity should be equal to its location",
 			location, person.self());
+
+		Response getResponse = proxy().get(parseId(location));
+		assertEquals(Status.OK, getResponse.getStatusInfo());
+
+		person = getResponse.readEntity(Person.class);
+		assertEquals(
+			"Self of a freshly GET-ted restentity should be equal to its location after being freshly created",
+			location, person.self());
 	}
 
 	private PersonResource proxy()
