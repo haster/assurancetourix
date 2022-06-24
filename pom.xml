@@ -25,7 +25,7 @@
 
 	<properties>
 		<version.java>11</version.java>
-		<version.resteasy>3.9.3.Final</version.resteasy>
+		<version.resteasy>3.14.0.Final</version.resteasy>
 		<version.log4j>2.13.0</version.log4j>
 		<version.arquillian.chameleon>1.0.0.CR6</version.arquillian.chameleon>
 		<version.liquibase>3.8.3</version.liquibase>
